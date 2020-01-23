@@ -1,0 +1,20 @@
+service: product
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: us-west-2
+
+functions:
+  productMigration:
+    handler: app/function/gateway/product.migrate
+    environment:
+      DRUPAL_KEY: 'DRUPAL_KEY_VALUE'
+      DRUPAL_SECRET: 'DRUPAL_SECRET_VALUE'
+    events:
+      - http:
+          path: /product
+          method: post
+          cors: true
+#      - sqs: arn:aws:sqs:us-west-2:611723861088:product
