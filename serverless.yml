@@ -13,8 +13,8 @@ functions:
       DRUPAL_KEY: 'DRUPAL_KEY_VALUE'
       DRUPAL_SECRET: 'DRUPAL_SECRET_VALUE'
     events:
-      - http:
-          path: /product
-          method: post
-          cors: true
-#      - sqs: arn:aws:sqs:us-west-2:611723861088:product
+#      - http:
+#          path: /product
+#          method: post
+#          cors: true
+      - sqs: arn:aws:sqs:us-west-2:611723861088:product

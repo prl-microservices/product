@@ -5,7 +5,7 @@ module.exports = {
     migrateProducts: (req, res, next) => {
         async.waterfall([
             createProduct = (callback) => {
-                product.migrate(JSON.stringify(req.body), null, callback)
+                product.migrate(req.body, null, callback)
             }
         ], (error, response) => {
             if (error) {

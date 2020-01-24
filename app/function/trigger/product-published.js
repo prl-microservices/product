@@ -17,25 +17,26 @@ migratePublished = (body) => {
             },
             // 3. Execute Drupal Service with above payload
             ExecuteDrlService = (body, callback) => {
-                console.log('Inside ExecuteDrlService Pub')
+                console.log('Inside ExecuteDrlService')
                 executeDrupalService(body, callback)
-                    // .then(response => {
-                    //     console.log('ssssssssssss')
-                    //     callback(null, response)
-                    // })
-                    // .catch(error => {
-                    //     console.log('fsdfsdfdsfdsf')
-                    //     callback(error, null)
-                    // })
+                    .then(response => callback(null, response))
+                    .catch(error => callback(error, null))
+            },
+            // 4. Get Product Details from CT to get Product-Number
+            CTProductNumber = (body, callback) => {
+                console.log('Inside Get Product Details Method')
+                getCTProductDetails(body, callback)
+            },
+            // 5. Send Notofication eg(slack)
+            SendNotification = (body, callback) => {
+                console.log('Inside Send Notification Method')
+                sendNotification(body, callback)
             }
-        ], (err, master_response) => {
-            if (err) { 
-                console.log('Inside error block')
+        ], (err, response) => {
+            if (err) 
                 reject(err)
-            } else {
-                console.log('Inside success block')
-                resolve(master_response)
-            }
+            else 
+                resolve(response)
         })    
     })
 }
@@ -48,23 +49,27 @@ constructDrupalPayload = (body, callback) => {
     callback(null, body)
 }
 
+getCTProductDetails = (body, callback) => {
+    callback(null, body)
+}
+
+sendNotification = (body, callback) => {
+    callback(null, body)
+}
+
 executeDrupalService = (body, callback) => {
-    /* try {
-        console.log('Product Created Service - Start')
+    try {
         if (!_.isUndefined(body.productProjection)) {
             drupalService.createOrUpdateDRLEntity(process.env.DRUPAL_PRODUCT_SERVICE_URL, body.productProjection)
                 .then(updatedProduct => callback(null, updatedProduct))
-                .catch(error => callback(error, null))
+                .catch(error => callback(null, error))
         } else {
-            console.log('Product Created Service - Empty')
-            //callback("Failed : Body wont have needed attributes to procees", null)
-            callback(null, {})
+            //throw new Error('Hurrah')
+            callback(null, [])
         }
     } catch (error) {
-        console.log('Product Created Service - Error')
         callback(error, null)
-    } */
-    callback(null, body)
+    }
 }
 
 module.exports = {

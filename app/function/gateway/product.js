@@ -10,10 +10,12 @@ migrate = (event, context, callback) => {
     console.log(`Environment Variable -> ' + ${process.env.DRUPAL_KEY}`)
     console.log(`Environment Variable -> ' + ${process.env.DRUPAL_SECRET}`)
     console.log(`Current Time -> ' + ${new Date().toTimeString()}`)
-    console.log(`Payload from CT -> ' + ${event.body}`)
+    console.log('Payload from CT SQS -> ' + _.isObject(event) ? JSON.stringify(event) : event)
+    console.log(`Payload from CT -> ' + ${event}`)
 
-    event = JSON.parse(event)
-    var ctBody = _.pick(event.body, 
+    event = !_.isObject(event) ? JSON.parse(event) : event
+    var ctBody = !_.isObject(event.Records[0].body) ? JSON.parse(event.Records[0].body) : event.Records[0].body
+    /* ctBody = _.pick(ctBody, 
                             [
                                 'type', 
                                 'productProjection', 
@@ -21,15 +23,15 @@ migrate = (event, context, callback) => {
                                 'createdAt', 
                                 'lastModifiedAt'
                             ]
-                        )
-    
-    console.log('Payload from CT -> ' + ctBody)
+                        ) */
+    console.log('Payload from CT -> ' + _.isObject(ctBody) ? JSON.stringify(ctBody) : ctBody)
     console.log(`Trigger Type = ${ctBody.type}`)
     
     var triggerType = ctBody.type
     syncDrupal(triggerType, ctBody)
         .then(response => {
-            console.log(`Final Response ${response}`)
+            console.log(`Lambda Response ${response}`)
+            response = _.isObject(response) ? response : JSON.stringify(response)
             //callback(null, response)
             callback(null,{
                 "statusCode": 200,
@@ -39,12 +41,25 @@ migrate = (event, context, callback) => {
                 "body": JSON.stringify({
                     "message" : "Failed : Body wont have needed attributes to procees"
                 }),
+                "response" : response,
                 "isBase64Encoded": false
             })
         })
         .catch(error => {
-            console.log(`Final Error ${error}`)
-            callback(response, null)
+            console.log(`Lambda Error ${error}`)
+            error = _.isObject(error) ? error : JSON.stringify(error)
+            //callback(error, null)
+            callback({
+                "statusCode": 502,
+                "headers": {
+                    "my_header": "my_value"
+                },
+                "body": JSON.stringify({
+                    "message" : "Failed : Body wont have needed attributes to procees"
+                }),
+                "response" : error.message,
+                "isBase64Encoded": false
+            }, null)
         })
     
     /* //ONLY FOR TESTING PURPOSE

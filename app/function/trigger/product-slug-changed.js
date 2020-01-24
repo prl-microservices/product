@@ -2,7 +2,7 @@ var _ = require('lodash')
 var async = require('async')
 var drupalService = require('../../service/drupalService')
 
-migrateSlugChanged = (body, callback) => {
+migrateSlugChanged = (body) => {
     return new Promise((resolve, reject) => {
         async.waterfall([
             // 1. Get required fields from CT response Payload
@@ -18,15 +18,25 @@ migrateSlugChanged = (body, callback) => {
             // 3. Execute Drupal Service with above payload
             ExecuteDrlService = (body, callback) => {
                 console.log('Inside ExecuteDrlService')
-                executeDrupalService(body)
+                executeDrupalService(body, callback)
                     .then(response => callback(null, response))
                     .catch(error => callback(error, null))
+            },
+            // 4. Get Product Details from CT to get Product-Number
+            CTProductNumber = (body, callback) => {
+                console.log('Inside Get Product Details Method')
+                getCTProductDetails(body, callback)
+            },
+            // 5. Send Notofication eg(slack)
+            SendNotification = (body, callback) => {
+                console.log('Inside Send Notification Method')
+                sendNotification(body, callback)
             }
         ], (err, response) => {
             if (err) 
-                reject(callback(err,null))
+                reject(err)
             else 
-                resolve(callback(null,response))
+                resolve(response)
         })    
     })
 }
@@ -39,23 +49,27 @@ constructDrupalPayload = (body, callback) => {
     callback(null, body)
 }
 
-executeDrupalService = (body) => {
-    return new Promise((resolve, reject) => {
-        try {
-            console.log('Product Created Service - Start')
-            if (!_.isUndefined(body.productProjection)) {
-                drupalService.createOrUpdateDRLEntity(process.env.DRUPAL_PRODUCT_SERVICE_URL, body.productProjection)
-                    .then(updatedProduct => resolve(updatedProduct))
-                    .catch(error => reject(error))
-            } else {
-                console.log('Product Created Service - Empty')
-                resolve([])
-            }
-        } catch (error) {
-            console.log('Product Created Service - Error')
-            reject(error)
+getCTProductDetails = (body, callback) => {
+    callback(null, body)
+}
+
+sendNotification = (body, callback) => {
+    callback(null, body)
+}
+
+executeDrupalService = (body, callback) => {
+    try {
+        if (!_.isUndefined(body.productProjection)) {
+            drupalService.createOrUpdateDRLEntity(process.env.DRUPAL_PRODUCT_SERVICE_URL, body.productProjection)
+                .then(updatedProduct => callback(null, updatedProduct))
+                .catch(error => callback(null, error))
+        } else {
+            //throw new Error('Hurrah')
+            callback(null, [])
         }
-    })
+    } catch (error) {
+        callback(error, null)
+    }
 }
 
 module.exports = {
