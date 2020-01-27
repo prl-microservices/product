@@ -1,0 +1,26 @@
+Create Subcription
+------------------
+
+{
+    "key": "product-webhook",
+    "destination": {
+        "type": "SQS",
+        "queueUrl" : "https://sqs.us-east-1.amazonaws.com/611723861088/myfirstquene",
+        "accessKey": "XXXXX",
+        "accessSecret": "XXXX",
+        "region" : "us-west-2"
+    },
+    "messages": [
+        {
+            "resourceTypeId": "product",
+            "types": [
+                "ProductCreated",
+                "ProductPublished",
+                "ProductUnpublished",
+                "ProductSlugChanged",
+                "ProductImageAdded",
+                "ProductDeleted"
+            ]
+        }
+    ]
+}
