@@ -76,7 +76,7 @@ migrate = (event, context, callback) => {
     callback(null, response); */
 }
 
-syncDrupal = (triggerType, eventBody, callback) => {
+syncDrupal = (triggerType, eventBody) => {
     return new Promise((resolve, reject) => {
         switch(triggerType) {
             case 'ProductCreated':

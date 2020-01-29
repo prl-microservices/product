@@ -73,5 +73,5 @@ executeDrupalService = (body, callback) => {
 }
 
 module.exports = {
-    migrate: (body, callback) => migrateCreated(body, callback)
+    migrate: (body) => migrateCreated(body)
 }
